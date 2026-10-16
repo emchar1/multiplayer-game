@@ -4,20 +4,7 @@ class_name Coin
 
 # PROPERTIES
 
-var collected: bool = false#:
-	#set(value):
-		#collected = value
-		#
-		## Instead of queue_free upon collection, we simply hide it and prevent
-		## detection; it's easier when building levels because you then have to
-		## use MultiplayerSpawner which apparently complicates things as we will
-		## see...
-		#visible = !value
-		#
-		#set_deferred(
-			#&"process_mode",
-			#Node.PROCESS_MODE_DISABLED if value else Node.PROCESS_MODE_INHERIT
-		#)
+var collected: bool = false
 
 
 # FUNCTIONS
@@ -43,7 +30,7 @@ func _play_collected_animation(peer_id: int) -> void:
 	var player: Player
 	
 	for candidate in players:
-		if candidate.peer_id == peer_id:
+		if candidate is Player and candidate.peer_id == peer_id:
 			player = candidate
 			break
 	
