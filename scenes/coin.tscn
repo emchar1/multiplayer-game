@@ -1,0 +1,46 @@
+[gd_scene format=3 uid="uid://dyy7l6vlrvh0r"]
+
+[ext_resource type="Script" uid="uid://lnexbqlc6gd0" path="res://scripts/coin.gd" id="1_11l1o"]
+[ext_resource type="Texture2D" uid="uid://fg1envwrw2ry" path="res://assets/images/Tiles/Default/coin_gold.png" id="2_d14el"]
+[ext_resource type="Texture2D" uid="uid://dmcxwjytwn8lx" path="res://assets/images/Tiles/Default/coin_gold_side.png" id="3_1ikuy"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_wnlwo"]
+properties/0/path = NodePath(".:collected")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_u3pco"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_d14el")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_1ikuy")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_lb7rc"]
+radius = 39.012817
+
+[node name="Coin" type="Area2D" unique_id=577344597 groups=["pickup"]]
+z_index = 1
+collision_layer = 8
+collision_mask = 2
+script = ExtResource("1_11l1o")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=2096424833]
+replication_config = SubResource("SceneReplicationConfig_wnlwo")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=2032978533]
+sprite_frames = SubResource("SpriteFrames_u3pco")
+autoplay = "default"
+frame_progress = 0.76127446
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=234165650]
+shape = SubResource("CircleShape2D_lb7rc")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

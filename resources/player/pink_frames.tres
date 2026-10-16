@@ -1,0 +1,62 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://chfqmhiyx81mn"]
+
+[ext_resource type="Texture2D" uid="uid://ciux3iby4yew1" path="res://assets/images/Characters/Default/character_pink_idle.png" id="1_k04p4"]
+[ext_resource type="Texture2D" uid="uid://dyonvqnwnb708" path="res://assets/images/Characters/Default/character_pink_duck.png" id="2_06uvp"]
+[ext_resource type="Texture2D" uid="uid://75k68guqerf8" path="res://assets/images/Characters/Default/character_pink_hit.png" id="3_y7g0o"]
+[ext_resource type="Texture2D" uid="uid://b0sxipel75sgc" path="res://assets/images/Characters/Default/character_pink_jump.png" id="4_fa4iq"]
+[ext_resource type="Texture2D" uid="uid://bnjcmm4qm58kb" path="res://assets/images/Characters/Default/character_pink_walk_a.png" id="5_iny4n"]
+[ext_resource type="Texture2D" uid="uid://bv11xj76xx38i" path="res://assets/images/Characters/Default/character_pink_walk_b.png" id="6_bclgn"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_k04p4")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_06uvp")
+}],
+"loop": 1,
+"name": &"duck",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_fa4iq")
+}],
+"loop": 1,
+"name": &"fall",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_y7g0o")
+}],
+"loop": 1,
+"name": &"hit",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_fa4iq")
+}],
+"loop": 1,
+"name": &"jump",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_iny4n")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_bclgn")
+}],
+"loop": 1,
+"name": &"walk",
+"speed": 5.0
+}]

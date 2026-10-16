@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://dmtx1sm1dkx1m"]
+
+[ext_resource type="Script" uid="uid://bhl3aqtqu42xh" path="res://scripts/enemy.gd" id="1_4ra3w"]
+[ext_resource type="Texture2D" uid="uid://byldn04oc70c1" path="res://assets/images/Enemies/Default/mouse_walk_a.png" id="2_5uy6h"]
+[ext_resource type="Texture2D" uid="uid://d3jx7qa8771l4" path="res://assets/images/Enemies/Default/mouse_walk_b.png" id="3_c4w8v"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_xwavj"]
+properties/0/path = NodePath(".:direction")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+properties/1/path = NodePath(".:destroyed")
+properties/1/spawn = true
+properties/1/replication_mode = 2
+properties/2/path = NodePath(".:position")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_u3pco"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_5uy6h")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_c4w8v")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_lb7rc"]
+radius = 21.0
+height = 60.0
+
+[node name="Enemy" type="CharacterBody2D" unique_id=850071271 groups=["enemy"]]
+collision_layer = 4
+script = ExtResource("1_4ra3w")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1227117936]
+replication_config = SubResource("SceneReplicationConfig_xwavj")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1394887067]
+sprite_frames = SubResource("SpriteFrames_u3pco")
+autoplay = "default"
+frame_progress = 0.87346846
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1815663201]
+position = Vector2(0, 10)
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_lb7rc")

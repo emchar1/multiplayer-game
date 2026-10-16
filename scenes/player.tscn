@@ -1,0 +1,64 @@
+[gd_scene format=3 uid="uid://dbpjy14sig3dt"]
+
+[ext_resource type="Script" uid="uid://baulkmc25n8ew" path="res://scripts/player.gd" id="1_qhqgy"]
+[ext_resource type="SpriteFrames" uid="uid://bhjv36su7763p" path="res://resources/player/beige_frames.tres" id="2_g2els"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_dqkch"]
+properties/0/path = NodePath(".:coins_collected")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+properties/1/path = NodePath(".:character")
+properties/1/spawn = true
+properties/1/replication_mode = 2
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_qlg0r"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:state")
+properties/1/spawn = true
+properties/1/replication_mode = 2
+properties/2/path = NodePath(".:direction")
+properties/2/spawn = true
+properties/2/replication_mode = 2
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_u3pco"]
+radius = 37.0
+height = 98.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_lb7rc"]
+radius = 26.0
+height = 84.0
+
+[node name="Player" type="CharacterBody2D" unique_id=1518542020 groups=["player"]]
+collision_layer = 2
+script = ExtResource("1_qhqgy")
+
+[node name="ServerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=234034057]
+replication_config = SubResource("SceneReplicationConfig_dqkch")
+
+[node name="ClientSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=404245903]
+replication_config = SubResource("SceneReplicationConfig_qlg0r")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=292630632]
+process_mode = 3
+sprite_frames = ExtResource("2_g2els")
+autoplay = "default"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1667733672]
+position = Vector2(0, 12)
+shape = SubResource("CapsuleShape2D_u3pco")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=84470578]
+offset = Vector2(0, -64)
+
+[node name="HitDetector" type="Area2D" parent="." unique_id=793609390]
+collision_layer = 2
+collision_mask = 12
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitDetector" unique_id=553831760]
+position = Vector2(0, 19)
+shape = SubResource("CapsuleShape2D_lb7rc")
+debug_color = Color(0.63854456, 0.5260043, 0, 0.41960785)
+
+[connection signal="body_entered" from="HitDetector" to="." method="_on_hit_detector_body_entered"]
