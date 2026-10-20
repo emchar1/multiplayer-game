@@ -137,12 +137,36 @@ func teleport(new_pos: Vector2) -> void:
 func collect_coins(amount: int) -> void:
 	coins_collected += amount
 
+@rpc("any_peer", "call_local", "reliable")
 func jump() -> void:
 	if state == State.JUMP:
 		return
 	
 	state = State.JUMP
 	velocity.y = -JUMP_POWER
+	
+	var tween_speed := 0.1
+	var tween = create_tween()
+	tween.tween_property(
+		self,
+		"scale",
+		Vector2(1.5, 0.5),
+		tween_speed
+	)
+	
+	tween.tween_property(
+		self,
+		"scale",
+		Vector2(0.5, 1.5),
+		tween_speed
+	)
+	
+	tween.tween_property(
+		self,
+		"scale",
+		Vector2.ONE,
+		tween_speed
+	)
 
 func duck() -> void:
 	if state == State.DUCK:
@@ -173,7 +197,7 @@ func _check_fall() -> bool:
 
 func _check_jump(input_v: Vector2) -> bool:
 	if input_v.y < 0.0 and is_on_floor():
-		jump()
+		jump.rpc()
 		return true
 	
 	return false
@@ -220,6 +244,11 @@ func _air_controls(input_v: Vector2, delta: float) -> void:
 		SPEED * input_v.x,
 		AIR_ACCEL * delta
 	)
+
+func _hit_stop() -> void:
+	Engine.time_scale = 0.05
+	await get_tree().create_timer(0.5, true, false, true).timeout
+	Engine.time_scale = 1
 
 
 # STATE FUNCTIONS
@@ -298,7 +327,8 @@ func _on_hit_detector_body_entered(body: Node2D) -> void:
 		# Determine if above or below the enemy
 		if global_position.y < body.global_position.y - Enemy.HEIGHT:
 			# Above, bounce and destroy
-			jump()
+			jump.rpc()
+			_hit_stop()
 			
 			if multiplayer.is_server():
 				body.destroy()

@@ -22,14 +22,7 @@ var direction: float = 1.0:
 		#Flip sprite
 		$AnimatedSprite2D.flip_h = direction > 0.0
 
-var destroyed: bool = false:
-	set(value):
-		destroyed = value
-		visible = !destroyed
-		set_deferred(
-			&"process_mode",
-			Node.PROCESS_MODE_DISABLED if value else Node.PROCESS_MODE_INHERIT
-		)
+var destroyed: bool = false
 
 
 # FUNCTIONS
@@ -65,7 +58,48 @@ func _physics_process(delta: float) -> void:
 @rpc("any_peer", "call_local", "reliable")
 func destroy() -> void:
 	destroyed = true
+	velocity = Vector2.ZERO
+	
+	_destroy_animation.rpc()
 
+@rpc("authority", "call_local", "reliable")
+func _destroy_animation():
+	var tween_speed := 0.3
+	var tween = create_tween()
+	
+	tween.tween_property(
+		self,
+		"scale",
+		Vector2(2, 0),
+		tween_speed
+	)
+	
+	tween.parallel().tween_property(
+		self,
+		"position:y",
+		position.y + 30,
+		tween_speed
+	)
+	
+	tween.tween_property(
+		self,
+		"scale",
+		Vector2(0, 2),
+		tween_speed / 2
+	)
+	
+	tween.parallel().tween_property(
+		self,
+		"position",
+		position - Vector2(30, 30),
+		tween_speed / 2
+	)
+	
+	tween.tween_callback(_destroy_cleanup)
+
+func _destroy_cleanup():
+	visible = false
+	set_deferred(&"process_mode", Node.PROCESS_MODE_DISABLED)
 
 # That's it! enemy/player handling will happen on the player side because it's
 # easier than the other way around due to multiplayer properties.
