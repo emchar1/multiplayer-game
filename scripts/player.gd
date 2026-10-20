@@ -150,14 +150,14 @@ func jump() -> void:
 	tween.tween_property(
 		self,
 		"scale",
-		Vector2(1.5, 0.5),
+		Vector2(1.25, 0.75),
 		tween_speed
 	)
 	
 	tween.tween_property(
 		self,
 		"scale",
-		Vector2(0.5, 1.5),
+		Vector2(0.85, 1.15),
 		tween_speed
 	)
 	

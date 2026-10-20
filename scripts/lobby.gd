@@ -8,6 +8,9 @@ const PLAYER_SCENE: PackedScene = preload("res://scenes/player.tscn")
 const MAX_PLAYERS = 5
 const DEFAULT_PORT = 47218 # Port number doesn't matter, just pick something
 
+# Flag to check if server is self-hosted or uses a hosting service.
+var headless_mode: bool = DisplayServer.get_name() == "headless"
+
 var level: Level = null
 var level_index: int = -1
 var available_characters: Array[int] = []
@@ -27,6 +30,11 @@ func _ready() -> void:
 	multiplayer.connection_failed.connect(_on_connection_failed)
 	multiplayer.server_disconnected.connect(_on_server_disconnected)
 	
+	# Start server on headless_mode
+	if headless_mode:
+		start_enet_server()
+		#start_websocket_server() # Optionally start as WebSocket server.
+	
 	# Prepare available_characters indices
 	for index: int in Player.CHARACTERS.size():
 		available_characters.append(index)
@@ -35,6 +43,9 @@ func _ready() -> void:
 # NETWORK FUNCTIONS
 
 func _start_server_common() -> void:
+	if headless_mode:
+		return
+	
 	load_level(0) # start the first level
 	spawn_player(1) # server always has ID = 1!
 
@@ -109,14 +120,26 @@ func _create_server_tls_options() -> TLSOptions:
 # NETWORK EVENT FUNCTIONS
 
 func _on_peer_connected(peer_id: int) -> void:
+	if not multiplayer.is_server():
+		return
+	
+	# Load the first level if needed. Added this for headless_mode.
+	if level == null:
+		load_level(0)
+	
 	# Handle player spawning if hosting
-	if multiplayer.is_server():
-		spawn_player(peer_id)
+	spawn_player(peer_id)
 
 func _on_peer_disconnected(peer_id: int) -> void:
-	# Hande player de-spawning if hosting
-	if multiplayer.is_server():
-		remove_player(peer_id)
+	if not multiplayer.is_server():
+		return
+	
+	# Unload the level if this is the last player. Added for headless_mode.
+	if get_player_count() <= 1:
+		unload_level()
+	
+	# Handle player de-spawning if hosting
+	remove_player(peer_id)
 
 func _on_connected_to_server() -> void:
 	print("CONNECTED TO SERVER")
