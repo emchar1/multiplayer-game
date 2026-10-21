@@ -22,7 +22,6 @@ spawn_limit = 5
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=475664011]
 script = ExtResource("2_5gu6x")
-use_wss = false
 
 [node name="Start" type="CenterContainer" parent="UI" unique_id=937521076]
 offset_right = 225.0
@@ -124,7 +123,6 @@ text = "Port:"
 
 [node name="Port" type="SpinBox" parent="UI/Start/WebSocket/Join/VBox/Options" unique_id=809862436]
 layout_mode = 2
-min_value = 1024.0
 max_value = 65535.0
 value = 47218.0
 

@@ -32,8 +32,8 @@ func _ready() -> void:
 	
 	# Start server on headless_mode
 	if headless_mode:
-		start_enet_server()
-		#start_websocket_server() # Optionally start as WebSocket server.
+		#start_enet_server() # Uses UDP.
+		start_websocket_server() # Optionally start as WebSocket server, TCP.
 	
 	# Prepare available_characters indices
 	for index: int in Player.CHARACTERS.size():
@@ -71,7 +71,12 @@ func start_websocket_server(port: int = DEFAULT_PORT) -> void:
 		return
 	
 	var peer: WebSocketMultiplayerPeer = WebSocketMultiplayerPeer.new()
-	var error: Error = peer.create_server(port, "*", tls_options)
+	
+	# tls_options is used for ws, i.e. self-hosted. For EC2 hosting service,
+	# bypass that and just send port.
+	#var error: Error = peer.create_server(port, "*", tls_options)
+	var error: Error = peer.create_server(port)
+	
 	print("create_server: ", error_string(error))
 	
 	if error != OK:
