@@ -22,13 +22,13 @@ spawn_limit = 5
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=475664011]
 script = ExtResource("2_5gu6x")
+use_wss = false
 
 [node name="Start" type="CenterContainer" parent="UI" unique_id=937521076]
-offset_right = 40.0
-offset_bottom = 40.0
+offset_right = 225.0
+offset_bottom = 198.0
 
 [node name="ENet" type="VBoxContainer" parent="UI/Start" unique_id=1953884796]
-visible = false
 layout_mode = 2
 
 [node name="Title" type="Label" parent="UI/Start/ENet" unique_id=1628908616]
@@ -92,6 +92,7 @@ layout_mode = 2
 text = "Host"
 
 [node name="WebSocket" type="VBoxContainer" parent="UI/Start" unique_id=198506794]
+visible = false
 layout_mode = 2
 
 [node name="Title" type="Label" parent="UI/Start/WebSocket" unique_id=1260374243]
@@ -156,7 +157,19 @@ value = 47218.0
 layout_mode = 2
 text = "Host"
 
+[node name="ToggleButton" type="Button" parent="UI" unique_id=9231260]
+offset_top = 220.0
+offset_right = 140.0
+offset_bottom = 251.0
+text = "Show WebSocket"
+
+[node name="WssLabel" type="Label" parent="UI" unique_id=611172071]
+offset_top = 260.0
+offset_right = 40.0
+offset_bottom = 283.0
+
 [connection signal="pressed" from="UI/Start/ENet/Join/VBox/Start" to="UI" method="_on_enet_join_pressed"]
 [connection signal="pressed" from="UI/Start/ENet/Host/VBox/Start" to="UI" method="_on_enet_host_pressed"]
 [connection signal="pressed" from="UI/Start/WebSocket/Join/VBox/Start" to="UI" method="_on_websocket_join_pressed"]
 [connection signal="pressed" from="UI/Start/WebSocket/Host/VBox/Start" to="UI" method="_on_websocket_host_pressed"]
+[connection signal="pressed" from="UI/ToggleButton" to="UI" method="_on_toggle_button_pressed"]
