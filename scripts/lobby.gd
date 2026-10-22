@@ -20,8 +20,6 @@ var available_characters: Array[int] = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	print("LOBBY READY - headless_mode: ", headless_mode)
-	
 	# Listen to multiplayer signals
 	# The following emit on both clients and servers
 	multiplayer.peer_connected.connect(_on_peer_connected)
@@ -32,14 +30,17 @@ func _ready() -> void:
 	multiplayer.connection_failed.connect(_on_connection_failed)
 	multiplayer.server_disconnected.connect(_on_server_disconnected)
 	
-	# Start server on headless_mode
-	if headless_mode:
-		#start_enet_server() # Start as ENet server; uses UDP.
-		start_websocket_server() # Start as WebSocket server; uses TCP.
-	
 	# Prepare available_characters indices
 	for index: int in Player.CHARACTERS.size():
 		available_characters.append(index)
+	
+	# Start server on headless_mode
+	if headless_mode:
+		#start_enet_server(DEFAULT_PORT) # Start ENet server; uses UDP
+		start_websocket_server(DEFAULT_PORT) # Start WebSocket server; uses TCP
+	
+	print(" - LOBBY READY - ")
+	print("headless_mode: ", headless_mode)
 
 
 # NETWORK FUNCTIONS
@@ -51,37 +52,35 @@ func _start_server_common() -> void:
 	load_level(0) # start the first level
 	spawn_player(1) # server always has ID = 1!
 
-func start_enet_server(port: int = DEFAULT_PORT) -> void:
+func start_enet_server(port: int) -> void:
 	var peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
 	peer.create_server(port, MAX_PLAYERS)
 	
 	multiplayer.multiplayer_peer = peer
 	
-	print("START ENET SERVER")
+	print(" - START ENET SERVER - ")
 	_start_server_common()
 
-func start_enet_client(address: String, port: int = DEFAULT_PORT) -> void:
+func start_enet_client(address: String, port: int) -> void:
 	var peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
 	peer.create_client(address, port)
 	
 	multiplayer.multiplayer_peer = peer
 
-func start_websocket_server(port: int = DEFAULT_PORT) -> void:
-	#var tls_options: TLSOptions = _create_server_tls_options()
-	#
-	#if tls_options == null:
-		#push_error("Failed to configure Websocket TLS.")
-		#return
+func start_websocket_server(port: int) -> void:
+	var tls_options: TLSOptions = _create_server_tls_options()
+	
+	if tls_options == null:
+		push_error("Failed to configure Websocket TLS.")
+		return
 	
 	var peer: WebSocketMultiplayerPeer = WebSocketMultiplayerPeer.new()
 	
-	# tls_options is used for ws, i.e. self-hosted. For EC2 hosting service,
-	# bypass that and just send port.
+	# local self-hosting with TLS (client should use wss://)
 	#var error: Error = peer.create_server(port, "*", tls_options)
-	var error: Error = peer.create_server(port)
 	
-	print("START WEBSOCKET SERVER")
-	print("create_server: ", error_string(error))
+	# local self-hosting without TLS (client should use ws:/)
+	var error: Error = peer.create_server(port)
 	
 	if error != OK:
 		push_error("Failed to start WebSocket server: " + error_string(error))
@@ -89,17 +88,20 @@ func start_websocket_server(port: int = DEFAULT_PORT) -> void:
 	
 	multiplayer.multiplayer_peer = peer
 	_start_server_common()
+	
+	print(" - START WEBSOCKET SERVER - ")
+	print("create_server result: ", error, " (", error_string(error), ")")
+
 
 func start_websocket_client(url: String) -> void:
-	print("Creating WebSocket client: ", url)
-	
 	var peer: WebSocketMultiplayerPeer = WebSocketMultiplayerPeer.new()
 	var error := peer.create_client(url)
 	
-	print("create_client result: ", error, " (", error_string(error), ")")
-	
 	multiplayer.multiplayer_peer = peer
-	print("WebSocket client started; waiting for connection.")
+	
+	print(" - START WEBSOCKET CLIENT - ")
+	print("Creating WebSocket client: ", url)
+	print("create_client result: ", error, " (", error_string(error), ")")
 
 # This is needed to allow encrypted hosting...
 func _create_server_tls_options() -> TLSOptions:
@@ -151,15 +153,15 @@ func _on_peer_disconnected(peer_id: int) -> void:
 	remove_player(peer_id)
 
 func _on_connected_to_server() -> void:
-	print("CONNECTED TO SERVER")
+	print("***CONNECTED TO SERVER***")
 	pass
 
 func _on_connection_failed() -> void:
-	print("CONNECTION FAILED")
+	print("***CONNECTION FAILED***")
 	pass
 
 func _on_server_disconnected() -> void:
-	print("SERVER DISCONNECTED")
+	print("***SERVER DISCONNECTED***")
 	pass
 
 

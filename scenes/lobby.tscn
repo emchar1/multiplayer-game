@@ -22,6 +22,18 @@ spawn_limit = 5
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=475664011]
 script = ExtResource("2_5gu6x")
+is_enet = false
+
+[node name="ToggleButton" type="Button" parent="UI" unique_id=9231260]
+offset_top = 220.0
+offset_right = 140.0
+offset_bottom = 251.0
+text = "Show WebSocket"
+
+[node name="WssLabel" type="Label" parent="UI" unique_id=611172071]
+offset_top = 260.0
+offset_right = 40.0
+offset_bottom = 283.0
 
 [node name="Start" type="CenterContainer" parent="UI" unique_id=937521076]
 offset_right = 225.0
@@ -59,7 +71,7 @@ text = "Port:"
 
 [node name="Port" type="SpinBox" parent="UI/Start/ENet/Join/VBox/Options" unique_id=514426]
 layout_mode = 2
-max_value = 99999.0
+max_value = 65535.0
 value = 47218.0
 
 [node name="Start" type="Button" parent="UI/Start/ENet/Join/VBox" unique_id=1720253490]
@@ -83,7 +95,7 @@ text = "Port:"
 [node name="Port" type="SpinBox" parent="UI/Start/ENet/Host/VBox/Options" unique_id=138902889]
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
-max_value = 99999.0
+max_value = 65535.0
 value = 47218.0
 
 [node name="Start" type="Button" parent="UI/Start/ENet/Host/VBox" unique_id=165560229]
@@ -124,7 +136,7 @@ text = "Port:"
 [node name="Port" type="SpinBox" parent="UI/Start/WebSocket/Join/VBox/Options" unique_id=809862436]
 layout_mode = 2
 max_value = 65535.0
-value = 47218.0
+value = 443.0
 
 [node name="Start" type="Button" parent="UI/Start/WebSocket/Join/VBox" unique_id=1842148625]
 layout_mode = 2
@@ -147,7 +159,6 @@ text = "Port:"
 [node name="Port" type="SpinBox" parent="UI/Start/WebSocket/Host/VBox/Options" unique_id=619808091]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
-min_value = 1024.0
 max_value = 65535.0
 value = 47218.0
 
@@ -155,19 +166,8 @@ value = 47218.0
 layout_mode = 2
 text = "Host"
 
-[node name="ToggleButton" type="Button" parent="UI" unique_id=9231260]
-offset_top = 220.0
-offset_right = 140.0
-offset_bottom = 251.0
-text = "Show WebSocket"
-
-[node name="WssLabel" type="Label" parent="UI" unique_id=611172071]
-offset_top = 260.0
-offset_right = 40.0
-offset_bottom = 283.0
-
+[connection signal="pressed" from="UI/ToggleButton" to="UI" method="_on_toggle_button_pressed"]
 [connection signal="pressed" from="UI/Start/ENet/Join/VBox/Start" to="UI" method="_on_enet_join_pressed"]
 [connection signal="pressed" from="UI/Start/ENet/Host/VBox/Start" to="UI" method="_on_enet_host_pressed"]
 [connection signal="pressed" from="UI/Start/WebSocket/Join/VBox/Start" to="UI" method="_on_websocket_join_pressed"]
 [connection signal="pressed" from="UI/Start/WebSocket/Host/VBox/Start" to="UI" method="_on_websocket_host_pressed"]
-[connection signal="pressed" from="UI/ToggleButton" to="UI" method="_on_toggle_button_pressed"]
