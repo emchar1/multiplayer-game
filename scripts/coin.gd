@@ -17,6 +17,14 @@ func _on_body_entered(body: Node2D) -> void:
 		return
 	
 	if body is Player:
+		var lobby := get_node_or_null("/root/Lobby") as Lobby
+		
+		if lobby == null:
+			push_error("Coin: Could not find Lobby.")
+			return
+		
+		lobby.register_coin_collected(str(name))
+		
 		collected = true
 		body.collect_coins(1)
 		_play_collected_animation.rpc(body.peer_id)

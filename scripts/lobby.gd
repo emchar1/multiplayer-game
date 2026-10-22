@@ -14,6 +14,8 @@ var headless_mode: bool = DisplayServer.get_name() == "headless"
 var level: Level = null
 var level_index: int = -1
 var available_characters: Array[int] = []
+var collected_coin_ids: Dictionary = {}
+var destroyed_enemy_ids: Dictionary = {}
 
 
 # FUNCTIONS
@@ -39,8 +41,19 @@ func _ready() -> void:
 		#start_enet_server(DEFAULT_PORT) # Start ENet server; uses UDP
 		start_websocket_server(DEFAULT_PORT) # Start WebSocket server; uses TCP
 	
+	# Connections
+	$LevelSpawner.spawned.connect(_on_level_spawned)
+	
 	print(" - LOBBY READY - ")
 	print("headless_mode: ", headless_mode)
+
+func _on_level_spawned(node: Node) -> void:
+	if node is not Level:
+		return
+	
+	level = node as Level
+	print("Replicated level received: ", level.name)
+	apply_world_state()
 
 
 # NETWORK FUNCTIONS
@@ -91,7 +104,6 @@ func start_websocket_server(port: int) -> void:
 	print(" - START WEBSOCKET SERVER - ")
 	print("create_server result: ", error, " (", error_string(error), ")")
 
-
 func start_websocket_client(url: String) -> void:
 	var peer: WebSocketMultiplayerPeer = WebSocketMultiplayerPeer.new()
 	var error := peer.create_client(url)
@@ -139,6 +151,9 @@ func _on_peer_connected(peer_id: int) -> void:
 	
 	# Handle player spawning if hosting
 	spawn_player(peer_id)
+	
+	# Update world state
+	send_world_state(peer_id)
 
 func _on_peer_disconnected(peer_id: int) -> void:
 	if not multiplayer.is_server():
@@ -164,6 +179,54 @@ func _on_server_disconnected() -> void:
 	pass
 
 
+# WORLD STATE FUNCTIONS
+
+@rpc("authority", "call_remote", "reliable")
+func receive_world_state(
+	collected_coins: Dictionary,
+	destroyed_enemies: Dictionary
+) -> void:
+	collected_coin_ids = collected_coins
+	destroyed_enemy_ids = destroyed_enemies
+	apply_world_state()
+
+func apply_world_state() -> void:
+	if level == null:
+		return
+	
+	for coin in level.coins.get_children():
+		if coin is Coin and collected_coin_ids.has(str(coin.name)):
+			coin.hide()
+	
+	for enemy in level.enemies.get_children():
+		if enemy is Enemy and destroyed_enemy_ids.has(str(enemy.name)):
+			enemy.hide()
+
+func send_world_state(peer_id: int) -> void:
+	if not multiplayer.is_server():
+		return
+	
+	receive_world_state.rpc_id(
+		peer_id,
+		collected_coin_ids,
+		destroyed_enemy_ids
+	)
+
+func register_coin_collected(coin_id: String) -> void:
+	if not multiplayer.is_server():
+		return
+	
+	collected_coin_ids[coin_id] = true
+	print("collected coin: ", coin_id)
+
+func register_enemy_destroyed(enemy_id: String) -> void:
+	if not multiplayer.is_server():
+		return
+	
+	destroyed_enemy_ids[enemy_id] = true
+	print("destroyed enemy: ", enemy_id)
+
+
 # LEVEL MANAGEMENT FUNCTIONS
 
 func load_level(new_level_index: int) -> void:
@@ -186,6 +249,10 @@ func load_level(new_level_index: int) -> void:
 	level = level_scn.instantiate()
 	level_index = new_level_index
 	$Level.add_child.call_deferred(level, true)
+	
+	# Reset dicts
+	collected_coin_ids.clear()
+	destroyed_enemy_ids.clear()
 	
 	# Listen to level events
 	level.goal_reached.connect(_on_goal_reached, ConnectFlags.CONNECT_ONE_SHOT)

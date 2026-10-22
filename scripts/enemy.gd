@@ -57,6 +57,20 @@ func _physics_process(delta: float) -> void:
 
 @rpc("any_peer", "call_local", "reliable")
 func destroy() -> void:
+	if not multiplayer.is_server():
+		return
+	
+	if destroyed:
+		return
+	
+	var lobby := get_node_or_null("/root/Lobby") as Lobby
+	
+	if lobby == null:
+		push_error("Enemy: Could not find lobby")
+		return
+	
+	lobby.register_enemy_destroyed(str(name))
+	
 	destroyed = true
 	velocity = Vector2.ZERO
 	

@@ -30,6 +30,9 @@ enum Background {
 	MUSHROOMS = 3
 }
 
+@onready var coins = $Coins
+@onready var enemies = $Enemies
+
 @export var display_name: String = "Untitled Level"
 @export var world_number: int = 0
 @export var level_number: int = 0

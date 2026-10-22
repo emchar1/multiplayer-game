@@ -336,9 +336,6 @@ func _on_hit_detector_body_entered(body: Node2D) -> void:
 		if state == State.HIT:
 			return
 		
-		if body.destroyed:
-			return
-		
 		# Determine if above or below the enemy
 		if global_position.y < body.global_position.y - Enemy.HEIGHT:
 			# Above, bounce and destroy
