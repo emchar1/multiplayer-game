@@ -20,6 +20,8 @@ var available_characters: Array[int] = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	print("LOBBY READY - headless_mode: ", headless_mode)
+	
 	# Listen to multiplayer signals
 	# The following emit on both clients and servers
 	multiplayer.peer_connected.connect(_on_peer_connected)
@@ -32,8 +34,8 @@ func _ready() -> void:
 	
 	# Start server on headless_mode
 	if headless_mode:
-		#start_enet_server() # Uses UDP.
-		start_websocket_server() # Optionally start as WebSocket server, TCP.
+		#start_enet_server() # Start as ENet server; uses UDP.
+		start_websocket_server() # Start as WebSocket server; uses TCP.
 	
 	# Prepare available_characters indices
 	for index: int in Player.CHARACTERS.size():
@@ -55,6 +57,7 @@ func start_enet_server(port: int = DEFAULT_PORT) -> void:
 	
 	multiplayer.multiplayer_peer = peer
 	
+	print("START ENET SERVER")
 	_start_server_common()
 
 func start_enet_client(address: String, port: int = DEFAULT_PORT) -> void:
@@ -64,11 +67,11 @@ func start_enet_client(address: String, port: int = DEFAULT_PORT) -> void:
 	multiplayer.multiplayer_peer = peer
 
 func start_websocket_server(port: int = DEFAULT_PORT) -> void:
-	var tls_options: TLSOptions = _create_server_tls_options()
-	
-	if tls_options == null:
-		push_error("Failed to configure Websocket TLS.")
-		return
+	#var tls_options: TLSOptions = _create_server_tls_options()
+	#
+	#if tls_options == null:
+		#push_error("Failed to configure Websocket TLS.")
+		#return
 	
 	var peer: WebSocketMultiplayerPeer = WebSocketMultiplayerPeer.new()
 	
@@ -77,6 +80,7 @@ func start_websocket_server(port: int = DEFAULT_PORT) -> void:
 	#var error: Error = peer.create_server(port, "*", tls_options)
 	var error: Error = peer.create_server(port)
 	
+	print("START WEBSOCKET SERVER")
 	print("create_server: ", error_string(error))
 	
 	if error != OK:
