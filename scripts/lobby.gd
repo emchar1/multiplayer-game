@@ -68,15 +68,14 @@ func start_enet_client(address: String, port: int) -> void:
 	multiplayer.multiplayer_peer = peer
 
 func start_websocket_server(port: int) -> void:
-	var tls_options: TLSOptions = _create_server_tls_options()
-	
-	if tls_options == null:
-		push_error("Failed to configure Websocket TLS.")
-		return
-	
 	var peer: WebSocketMultiplayerPeer = WebSocketMultiplayerPeer.new()
 	
 	# local self-hosting with TLS (client should use wss://)
+	#var tls_options: TLSOptions = _create_server_tls_options()
+	#if tls_options == null:
+		#push_error("Failed to configure Websocket TLS.")
+		#return
+		#
 	#var error: Error = peer.create_server(port, "*", tls_options)
 	
 	# local self-hosting without TLS (client should use ws:/)
