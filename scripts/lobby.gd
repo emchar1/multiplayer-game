@@ -38,8 +38,8 @@ func _ready() -> void:
 	
 	# Start server on headless_mode
 	if headless_mode:
-		#start_enet_server(DEFAULT_PORT) # Start ENet server; uses UDP
-		start_websocket_server(DEFAULT_PORT) # Start WebSocket server; uses TCP
+		start_enet_server(DEFAULT_PORT) # Start ENet server; uses UDP
+		#start_websocket_server(DEFAULT_PORT) # Start WebSocket server; uses TCP
 	
 	# Connections
 	$LevelSpawner.spawned.connect(_on_level_spawned)
@@ -84,15 +84,15 @@ func start_websocket_server(port: int) -> void:
 	var peer: WebSocketMultiplayerPeer = WebSocketMultiplayerPeer.new()
 	
 	# local self-hosting with TLS (client should use wss://)
-	#var tls_options: TLSOptions = _create_server_tls_options()
-	#if tls_options == null:
-		#push_error("Failed to configure Websocket TLS.")
-		#return
-		#
-	#var error: Error = peer.create_server(port, "*", tls_options)
+	var tls_options: TLSOptions = _create_server_tls_options()
+	if tls_options == null:
+		push_error("Failed to configure Websocket TLS.")
+		return
+		
+	var error: Error = peer.create_server(port, "*", tls_options)
 	
 	# local self-hosting without TLS (client should use ws:/)
-	var error: Error = peer.create_server(port)
+	#var error: Error = peer.create_server(port)
 	
 	if error != OK:
 		push_error("Failed to start WebSocket server: " + error_string(error))
