@@ -75,6 +75,8 @@ var direction: float = 1.0:
 		#Flip sprite
 		$AnimatedSprite2D.flip_h = direction < 0.0
 
+var did_bounce: bool = false
+
 
 # FUNCTIONS
 
@@ -118,6 +120,10 @@ func _physics_process(delta: float) -> void:
 		State.FALL: _state_fall(input_v, delta)
 		State.DUCK: _state_duck(input_v, delta)
 		State.HIT: _state_hit(input_v, delta)
+	
+	# Reset bounce
+	if is_on_floor():
+		did_bounce = false
 	
 	# Apply physics
 	move_and_slide()
@@ -171,6 +177,12 @@ func jump() -> void:
 func duck() -> void:
 	if state == State.DUCK:
 		return
+	
+	if did_bounce:
+		return
+	
+	if not is_on_floor():
+		velocity.x = 0
 	
 	state = State.DUCK
 	velocity.y += JUMP_POWER
@@ -245,9 +257,9 @@ func _air_controls(input_v: Vector2, delta: float) -> void:
 		AIR_ACCEL * delta
 	)
 
-func _hit_stop() -> void:
+func _hit_stop(pause: float = 0.0) -> void:
 	Engine.time_scale = 0.05
-	await get_tree().create_timer(0.5, true, false, true).timeout
+	await get_tree().create_timer(pause, true, false, true).timeout
 	Engine.time_scale = 1
 
 
@@ -324,9 +336,13 @@ func _on_hit_detector_body_entered(body: Node2D) -> void:
 		if state == State.HIT:
 			return
 		
+		if body.destroyed:
+			return
+		
 		# Determine if above or below the enemy
 		if global_position.y < body.global_position.y - Enemy.HEIGHT:
 			# Above, bounce and destroy
+			did_bounce = true
 			jump.rpc()
 			_hit_stop()
 			
