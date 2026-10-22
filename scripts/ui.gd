@@ -10,7 +10,7 @@ extends CanvasLayer
 @onready var wss_label = $WssLabel
 
 @export var is_enet: bool = true
-@export var use_wss: bool = true
+@export var use_tls: bool = true
 
 var protocol: String
 
@@ -21,7 +21,7 @@ func _ready() -> void:
 	_update_protocol_ui()
 
 func _update_protocol_ui() -> void:
-	protocol = "wss://" if use_wss else "ws://"
+	protocol = "wss://" if use_tls else "ws://"
 	wss_label.text = protocol
 	
 	enet_console.visible = is_enet
