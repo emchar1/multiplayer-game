@@ -80,8 +80,9 @@ var did_bounce: bool = false
 
 # FUNCTIONS
 
-func setup(id: int) -> void:
+func setup(id: int, character_select: int) -> void:
 	name = str(id)
+	character = character_select
 
 func _enter_tree() -> void:
 	# Set node authority

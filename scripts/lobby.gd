@@ -320,9 +320,9 @@ func spawn_player(peer_id: int) -> void:
 		return
 	
 	# Prepare new player
+	var character_select: int = available_characters.pop_front()
 	var player: Player = PLAYER_SCENE.instantiate()
-	player.setup(peer_id)
-	player.character = available_characters.pop_front()
+	player.setup(peer_id, character_select)
 	
 	# Add player to level and teleport to spawn position
 	$Players.add_child(player)
