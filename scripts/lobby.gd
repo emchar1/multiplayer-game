@@ -321,7 +321,7 @@ func spawn_player(peer_id: int) -> void:
 	
 	# Prepare new player
 	var player: Player = PLAYER_SCENE.instantiate()
-	player.name = str(peer_id)
+	player.setup(peer_id)
 	player.character = available_characters.pop_front()
 	
 	# Add player to level and teleport to spawn position

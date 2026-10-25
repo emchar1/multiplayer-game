@@ -80,6 +80,9 @@ var did_bounce: bool = false
 
 # FUNCTIONS
 
+func setup(id: int) -> void:
+	name = str(id)
+
 func _enter_tree() -> void:
 	# Set node authority
 	peer_id = int(name)
