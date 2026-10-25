@@ -67,7 +67,11 @@ func _start_server_common() -> void:
 
 func start_enet_server(port: int) -> void:
 	var peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
-	peer.create_server(port, MAX_PLAYERS)
+	var error := peer.create_server(port, MAX_PLAYERS)
+	
+	if error != OK:
+		print("Failed to host.")
+		return
 	
 	multiplayer.multiplayer_peer = peer
 	
@@ -76,7 +80,11 @@ func start_enet_server(port: int) -> void:
 
 func start_enet_client(address: String, port: int) -> void:
 	var peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
-	peer.create_client(address, port)
+	var error := peer.create_client(address, port)
+	
+	if error != OK:
+		print("Failed to join.")
+		return
 	
 	multiplayer.multiplayer_peer = peer
 
