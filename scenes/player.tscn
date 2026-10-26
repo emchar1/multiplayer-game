@@ -49,9 +49,6 @@ autoplay = "default"
 position = Vector2(0, 12)
 shape = SubResource("CapsuleShape2D_u3pco")
 
-[node name="Camera2D" type="Camera2D" parent="." unique_id=84470578]
-offset = Vector2(0, -64)
-
 [node name="HitDetector" type="Area2D" parent="." unique_id=793609390]
 collision_layer = 2
 collision_mask = 12

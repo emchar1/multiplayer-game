@@ -91,9 +91,7 @@ func _enter_tree() -> void:
 	local = peer_id == multiplayer.get_unique_id()
 
 func _ready() -> void:
-	if local:
-		# Activate the camera if local
-		$Camera2D.make_current()
+	pass
 
 func _physics_process(delta: float) -> void:
 	# Only process physics if local

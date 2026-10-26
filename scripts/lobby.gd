@@ -8,6 +8,8 @@ const PLAYER_SCENE: PackedScene = preload("res://scenes/player.tscn")
 const MAX_PLAYERS = 5
 const DEFAULT_PORT = 47218 # Port number doesn't matter, just pick something
 
+@onready var camera = $Camera2D
+
 # Flag to check if server is self-hosted or uses a hosting service.
 var headless_mode: bool = DisplayServer.get_name() == "headless"
 
@@ -47,6 +49,9 @@ func _ready() -> void:
 	print(" - LOBBY READY - ")
 	print("headless_mode: ", headless_mode)
 
+func _process(delta: float) -> void:
+	camera.global_position = _get_camera_center()
+
 func _on_level_spawned(node: Node) -> void:
 	if node is not Level:
 		return
@@ -54,6 +59,20 @@ func _on_level_spawned(node: Node) -> void:
 	level = node as Level
 	print("Replicated level received: ", level.name)
 	apply_world_state()
+
+
+# CAMERA FUNCTIONS
+
+func _get_camera_center() -> Vector2:
+	var player_positions: Vector2 = Vector2.ZERO
+	var player_count: int = 0
+	
+	for child in $Players.get_children():
+		if child is Player:
+			player_positions += child.global_position
+			player_count += 1
+	
+	return player_positions / player_count
 
 
 # NETWORK FUNCTIONS
@@ -73,9 +92,9 @@ func start_enet_server(port: int) -> void:
 		print("Failed to host.")
 		return
 	
-	multiplayer.multiplayer_peer = peer
-	
 	print(" - START ENET SERVER - ")
+	
+	multiplayer.multiplayer_peer = peer
 	_start_server_common()
 
 func start_enet_client(address: String, port: int) -> void:
